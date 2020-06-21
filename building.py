@@ -10,7 +10,6 @@ class Building:
         self.area = area
         self.isRectangle = self.rectangle_check()
 
-    # length width count
     def rectangle_check(self):
         # get minimum bounding box around polygon
         box = self.polygon.minimum_rotated_rectangle
