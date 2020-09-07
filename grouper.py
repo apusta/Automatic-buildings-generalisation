@@ -1,20 +1,25 @@
 from group import Group
-import uuid
+from context import Mode
 
 
 class Grouper:
     @staticmethod
-    def run(buildings):
+    def run(buildings, context):
         groups_dict = {}
         for building in buildings:
-            print(building.properties["OBJECTID"])
+            print(building.properties["ID"])
             connected_with = []
             for building2 in buildings:
                 if building2 == building:
                     continue
 
-                if building.isConnected(building2):
-                    connected_with.append(building2)
+                if context.mode == Mode.UNION:
+                    if building.is_touching(building2):
+                        connected_with.append(building2)
+                        continue
+                elif context.mode == Mode.TYPIFICATION:
+                    if building.is_connected(building2):
+                        connected_with.append(building2)
 
             if len(connected_with) > 0:
                 group_ids = []
@@ -33,12 +38,12 @@ class Grouper:
                 else:
                     groups = [groups_dict.get(id) for id in group_ids]
 
-                    merged_group_buildings = [building] + connected_with + Grouper.__unpack_buildings_from_groups(groups)
+                    merged_group_buildings = [building] + connected_with + Grouper.__unpack_buildings_from_groups(
+                        groups)
                     merged_group_buildings = list(set(merged_group_buildings))
 
-                    new_group = Group(uuid.uuid4(), merged_group_buildings)
+                    new_group = Group(merged_group_buildings)
                     groups_dict[new_group.id] = new_group
-
                     for group_id in group_ids:
                         groups_dict.pop(group_id, None)
 

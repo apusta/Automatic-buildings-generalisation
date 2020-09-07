@@ -1,54 +1,44 @@
 from shapely.geometry import Polygon, Point, shape
 import math
+import uuid
+
 
 class Building:
 
     def __init__(self, properties, polygon, area):
 
         self.properties = properties
+        self.id = str(uuid.uuid4())
+        self.type = properties['SRdBdWgKs']
         self.polygon = polygon
-        self.buffer = self.polygon.buffer(0.5)
+        self.bufferForTypification = self.polygon.buffer(0.5)
+        self.bufferForUnion = self.polygon.buffer(0.01)
         self.area = area
-        self.isRectangle = self.rectangle_check()
-        self.signatureRotation = self.sygnature_check()
+        self.isRectangle = self.rectangle_check(0.70, 1.30)
+        self.signatureRotation = None
         self.groupId = None
 
-
     def __eq__(self, other):
-        return self.properties['OBJECTID'] == other.properties['OBJECTID']
+        return self.id == other.id
 
     def __hash__(self):
-        return hash(self.properties['OBJECTID'])
+        return hash(self.id)
 
-    def rectangle_check(self):
-        # get minimum bounding box around polygon
+    def rectangle_check(self, min_area_factor, max_area_factor):
+
         box = self.polygon.minimum_rotated_rectangle
+        area_rectangle = box.area
+        min_area = min_area_factor * self.area
+        max_area = max_area_factor * self.area
 
-        # get coordinates of polygon vertices
-        x, y = box.exterior.coords.xy
-
-        # get length of bounding box edges
-        edge_length = (Point(x[0], y[0]).distance(Point(x[1], y[1])), Point(x[1], y[1]).distance(Point(x[2], y[2])))
-
-        # get length of polygon as the longest edge of the bounding box
-        length = max(edge_length)
-
-        # get width of polygon as the shortest edge of the bounding box
-        width = min(edge_length)
-
-        areaRectangle = length * width
-
-        minArea = 0.95 * self.area
-        maxArea = 1.05 * self.area
-
-        if minArea < areaRectangle < maxArea:
+        if min_area < area_rectangle < max_area:
             return True
         else:
             return False
 
-    def azimuthCount(self, xpp, ypp, xkk, ykk):
-        dX = xkk - xpp
-        dY = ykk - ypp
+    def azimuth_count(self, xp, yp, xk, yk):
+        dX = xk - xp
+        dY = yk - yp
         azimuth = 0
 
         if dX == 0 and dY == 0:
@@ -72,35 +62,27 @@ class Building:
             elif dX > 0 > dY:
                 azimuth = 2 * math.pi - fi
 
-        return (azimuth*180/math.pi)
+        return (azimuth * 180 / math.pi)
 
-
-    def sygnature_check(self):
-        if self.area > 500:
-            return None
+    def sygnature_rotation_count(self):
 
         box = self.polygon.minimum_rotated_rectangle
         x, y = box.exterior.coords.xy
 
-        # Point in the middle of the edge
-        xkk = ((x[1]-x[0])/2)+x[0]
-        ykk = ((y[1]-y[0])/2)+y[0]
+        xk = ((x[1] - x[0]) / 2) + x[0]
+        yk = ((y[1] - y[0]) / 2) + y[0]
 
-        centroidOfBox = box.centroid
-        xpp = centroidOfBox.x
-        ypp = centroidOfBox.y
+        centroid_of_box = box.centroid
+        xp = centroid_of_box.x
+        yp = centroid_of_box.y
 
-        angle = - self.azimuthCount(xpp, ypp, xkk, ykk)
+        angle = - self.azimuth_count(xp, yp, xk, yk)
 
-        return angle
+        self.signatureRotation = angle
 
-    def isConnected(self, building):
-        return self.buffer.intersects(building.buffer)
+    def is_connected(self, building):
+        return self.bufferForTypification.intersects(building.bufferForTypification)
 
-
-
-
-
-
-
+    def is_touching(self, building):
+        return self.bufferForUnion.intersects(building.bufferForUnion)
 
