@@ -1,11 +1,14 @@
-# Generalziacja
+# Automatic buildings generalisation
 
-### Jak uruchmić
-W celu uruchmienia programu wymagane jest instalacja następujących bibliotek:
+### How to run?
+Dependencies: 
 * Shapely
 * Fiona
-* GDAL
 
-Po zainstalowniu bibliotek program uruchmić `is_rectangle.py`
+You can install all dependencies with `requirements.txt`.
+
+TODO start instructions
+
+### 
 
 
