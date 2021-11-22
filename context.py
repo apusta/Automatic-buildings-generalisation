@@ -1,7 +1,6 @@
 class Scale:
-    SCALE10K = '10k'
-    SCALE25K = '25k'
-
+    SCALE10K = '10000'
+    SCALE25K = '25000'
 
 class Mode:
     UNION = 'union'

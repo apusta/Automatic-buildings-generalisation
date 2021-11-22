@@ -1,3 +1,6 @@
+import argparse
+import sys
+
 import fiona
 from fiona.crs import from_epsg
 from shapely.geometry import Polygon, mapping
@@ -23,14 +26,30 @@ buildingsForManualGeneralisation =[]
 groupTipificated = []
 groupUnioned = []
 
-context = Context(Scale.SCALE10K, Mode.UNION)
+parser = argparse.ArgumentParser(description='Run generalisation with defined mode')
+parser.add_argument('-s', '--scale', type=str, help='Output generalisation scale [10000, 25000]')
+parser.add_argument('-m', '--mode', type=str, help='Generalisation mode [typification, union')
+parser.add_argument('-f', '--file', type=str, help='Path to input .shp file')
+parser.add_argument('-o', '--output', type=str, help='Path to output folder')
+
+args = parser.parse_args()
+
+if args.scale != Scale.SCALE10K and args.scale != Scale.SCALE25K:
+    sys.exit("Supported scales are {} or {}".format(Scale.SCALE10K, Scale.SCALE25K))
+
+if args.mode != Mode.UNION and args.mode != Mode.TYPIFICATION:
+    sys.exit("Supported modes are typification or union")
+
+print("Start processing..")
+
+context = Context(args.scale, args.mode)
+# context = Context(Scale.SCALE10K, Mode.UNION)
 
 cache = Cache()
 
 if cache.exists(buildings_cache_name) is False:
-    # loading data from file and saving it as instances of Building
     counter = 0
-    for building_data in fiona.open('./data_egib/_budynki_wybrane_luzne.shp'):
+    for building_data in fiona.open(args.file):
         # if counter > 1000:
         #     break
         # counter += 1
@@ -64,5 +83,5 @@ elif context.scale == Scale.SCALE25K:
     generalisator = Generalise25k(context, buildings, valid_groups)
     result = generalisator.run()
 
-result.save()
+result.save(args.output)
 
