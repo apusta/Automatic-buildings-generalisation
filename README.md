@@ -19,47 +19,49 @@ To run the program insert 4 arguments:
 ```
 ### Output files
 
-####Scale 10k:
+#### Scale 10k:
 * 'eliminated.shp' - buildings that should be eliminated because of their insufficient size 
 * 'generalised_to_rectangle.shp' - buildings generalised to rectangle
 * 'notGeneralised'- buildings with complicated shape that should be generalised manually
 
-####Scale 25k:
+#### Scale 25k:
 * 'eliminated.shp' - buildings that should be eliminated because of their insufficient size
 * 'generalised_to_rectangle.shp' - buildings generalised to rectangle
 * 'notGeneralised.shp'- buildings with complicated shape that should be generalised manually
 * 'generalised_to_signature.shp'- buildings which geometry was changed to Point and contain 'Rotation' property for signature rotation.
-  #####Mode union:
+  ##### Mode union:
 * 'union.shp' - groups of buildings with the same type unioned into one shape. If its possible, shapes of buildings are firstly generalised to rectangle. 
-  #####Mode typification:
+  ##### Mode typification:
 * 'typificated.shp' - groups of buildings with the same type that are typificated
 
-###Results
-####Generalised to rectangle sample:
+### Results
+#### Generalised to rectangle sample:
 ![Generalised to rectangle sample](image_readme/rectangle_sample.JPG)
 
 a) Raw buildings shape
 b) Generalised to rectangle
-####Typification sample:
+
+#### Typification sample:
 ![Typificated sample](image_readme/typification_sample.JPG)
 
 a), b) Raw buildings shape
 c), d) Raw + typificated
 e), f) Typificated
-####Union sample:
+
+#### Union sample:
 ![Union sample](image_readme/union_sample.JPG)
 
 a), b) Raw buildings shape
 c), d) Raw + unioned
 e), f) Unioned
 
-####10k generalisation sample:
+#### 10k generalisation sample:
 ![10k sample](image_readme/10k_sample.JPG)
 
 a) Raw buildings shape
 b) Generalised to 10k
 
-####25k generalisation sample:
+#### 25k generalisation sample:
 ![25k sample](image_readme/25k_sample.JPG)
 
 a) Raw buildings shape
