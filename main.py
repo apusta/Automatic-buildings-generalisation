@@ -1,5 +1,7 @@
 import argparse
 import sys
+import os.path
+from os import path
 
 import fiona
 from fiona.crs import from_epsg
@@ -30,7 +32,7 @@ parser = argparse.ArgumentParser(description='Run generalisation with defined mo
 parser.add_argument('-s', '--scale', type=str, help='Output generalisation scale [10000, 25000]')
 parser.add_argument('-m', '--mode', type=str, help='Generalisation mode [typification, union')
 parser.add_argument('-f', '--file', type=str, help='Path to input .shp file')
-parser.add_argument('-o', '--output', type=str, help='Path to output folder')
+parser.add_argument('-o', '--output_dir', type=str, help='Path to output folder')
 
 args = parser.parse_args()
 
@@ -39,6 +41,12 @@ if args.scale != Scale.SCALE10K and args.scale != Scale.SCALE25K:
 
 if args.mode != Mode.UNION and args.mode != Mode.TYPIFICATION:
     sys.exit("Supported modes are typification or union")
+
+if path.isfile(args.file) is False:
+    sys.exit("File not exist")
+
+if path.isdir(args.output_dir) is False:
+    sys.exit("Output directory not exist")
 
 print("Start processing..")
 
@@ -83,5 +91,5 @@ elif context.scale == Scale.SCALE25K:
     generalisator = Generalise25k(context, buildings, valid_groups)
     result = generalisator.run()
 
-result.save(args.output)
+result.save(args.output_dir)
 
